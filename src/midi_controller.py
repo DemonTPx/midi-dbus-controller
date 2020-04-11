@@ -2,6 +2,25 @@ import mido
 from lcd_7bit_font import lcd_7bit_render
 from unidecode import unidecode
 from typing import List
+from enum import Enum
+
+
+class Color(Enum):
+    BLACK = 0
+    RED = 1
+    GREEN = 2
+    YELLOW = 3
+    BLUE = 4
+    MAGENTA = 5
+    CYAN = 6
+    WHITE = 7
+
+
+class Invert(Enum):
+    NONE = 0
+    TOP = 1
+    BOTTOM = 2
+    BOTH = 3
 
 
 class MidiController:
@@ -21,7 +40,7 @@ class MidiController:
         self.control_change(90, 0)
 
         self.sysex(self.create_segment_display_data(''))
-        self.sysex(self.create_lcd_display_data('', 0x0f))
+        self.sysex(self.create_lcd_display_data(''))
 
     def note_on(self, note: int, velocity: int) -> None:
         self._send(mido.Message('note_on', note=note, velocity=velocity))
@@ -38,11 +57,12 @@ class MidiController:
     def _send(self, message: mido.Message) -> None:
         self._port_out.send(message)
 
-    def create_lcd_display_data(self, characters: str, cc: int) -> List[int]:
+    def create_lcd_display_data(self, characters: str, color: Color = Color.WHITE, invert: Invert = Invert.NONE) -> List[int]:
         characters = unidecode(characters)
         character_data = self._pad_to(list(map(ord, characters[:14])), 14)
+        color_code = color.value | (invert.value << 4)
 
-        return [0x00, 0x20, 0x32, 0x41, 0x4c, 0x00, cc] + character_data
+        return [0x00, 0x20, 0x32, 0x41, 0x4c, 0x00, color_code] + character_data
 
     def create_segment_display_data(self, characters: str) -> List[int]:
         characters = unidecode(characters)

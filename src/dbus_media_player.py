@@ -1,5 +1,9 @@
 import dbus
-from player_properties import PlayerProperties
+from collections import namedtuple
+
+
+class PlayerProperties(namedtuple('PlayerProperties', ['playback_status', 'album_artist', 'album', 'title', 'track_number'])):
+    pass
 
 
 class DbusMediaPlayer:

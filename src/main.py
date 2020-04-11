@@ -2,9 +2,8 @@ import mido
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
-from midi_controller import MidiController
-from dbus_media_player import DbusMediaPlayer
-from player_properties import PlayerProperties
+from midi_controller import MidiController, Color, Invert
+from dbus_media_player import DbusMediaPlayer, PlayerProperties
 
 mido.set_backend('mido.backends.rtmidi/LINUX_ALSA')
 
@@ -19,7 +18,7 @@ player = DbusMediaPlayer(session_bus, 'spotify')
 def properties_changed_handler(props: PlayerProperties):
     text = props.album_artist[0:7].ljust(7, ' ') + props.title[0:7].ljust(7, ' ')
 
-    data = controller.create_lcd_display_data(text, 0x0a)
+    data = controller.create_lcd_display_data(text, Color.GREEN, Invert.NONE)
     controller.sysex(data)
 
     track = props.track_number
