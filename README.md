@@ -2,6 +2,12 @@
 
 Small hobby project which connects my Behringer X-Touch One MIDI controller to D-Bus so I can control my media player
 
+## Prerequisites
+
+The following packages are needed on Ubuntu 18.04 / Linux Mint 19
+
+    libjack-dev libgirepository1.0-dev libcairo2-dev
+
 ### Features
 
 - Control spotify using the previous, next, stop and play buttons
