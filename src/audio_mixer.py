@@ -21,7 +21,6 @@ class AudioMixer:
 
         while self._running:
             pulse.event_listen(timeout=0.1)
-            pass
 
     def _event_callback(self, event):
         self._on_volume_change()
