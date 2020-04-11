@@ -2,7 +2,7 @@ import mido
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
-from midi_controller import MidiController, Color, Invert
+from midi_controller import MidiController, Note, Control, Color, Invert
 from dbus_media_player import DbusMediaPlayer, PlayerProperties
 from audio_mixer import AudioMixer
 
@@ -19,7 +19,7 @@ player = DbusMediaPlayer(session_bus, 'spotify')
 mixer = AudioMixer()
 
 
-def properties_changed_handler(props: PlayerProperties):
+def properties_changed_handler(props: PlayerProperties) -> None:
     text = props.artist[0:7].ljust(7, ' ') + props.title[0:7].ljust(7, ' ')
 
     data = controller.create_lcd_display_data(text, Color.GREEN, Invert.NONE)
@@ -31,33 +31,47 @@ def properties_changed_handler(props: PlayerProperties):
     controller.sysex(controller.create_segment_display_data(text))
 
     if props.playback_status == 'Playing':
-        controller.note_on(22, 0)
-        controller.note_on(23, 127)
+        controller.note_on(Note.STOP, 0)
+        controller.note_on(Note.PLAY, 127)
 
     if props.playback_status in ['Paused', 'Stopped']:
-        controller.note_on(22, 127)
-        controller.note_on(23, 0)
+        controller.note_on(Note.STOP, 127)
+        controller.note_on(Note.PLAY, 0)
 
 
-def handle_midi_message(message):
+def handle_midi_message(message) -> None:
     if message.type == 'note_on' and message.velocity != 0:
-        if message.note == 20:
+        if message.note == Note.PREVIOUS.value:
             player.previous()
             player.play()
-        if message.note == 21:
+
+        if message.note == Note.NEXT.value:
             player.next()
             player.play()
-        if message.note == 22:
+
+        if message.note == Note.STOP.value:
             player.stop()
-        if message.note == 23:
+
+        if message.note == Note.PLAY.value:
             player.play_pause()
 
+        if message.note == Note.FADER.value:
+            mixer.callback = None
+
+    if message.type == 'note_on' and message.velocity == 0:
+        if message.note == Note.FADER.value:
+            mixer.callback = handle_volume
+
     if message.type == 'control_change':
-        if message.control == 70:
-            mixer.set_volume(int(message.value / 1.27))
+        if message.control == Control.FADER.value:
+            mixer.set_volume(message.value / 127)
 
 
-controller.control_change(70, int(mixer.volume() * 1.27))
+def handle_volume(volume: float) -> None:
+    controller.control_change(Control.FADER, int(volume * 127))
+
+
+mixer.callback = handle_volume
 properties_changed_handler(player.fetch_properties())
 player.on_properties_changed(properties_changed_handler)
 controller.open_input(handle_midi_message)

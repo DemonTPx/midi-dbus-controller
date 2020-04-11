@@ -5,6 +5,20 @@ from typing import List
 from enum import Enum
 
 
+class Control(Enum):
+    FADER = 70
+    LED_RING = 80
+    LED_METER = 90
+
+
+class Note(Enum):
+    PREVIOUS = 20
+    NEXT = 21
+    STOP = 22
+    PLAY = 23
+    FADER = 110
+
+
 class Color(Enum):
     BLACK = 0
     RED = 1
@@ -33,23 +47,23 @@ class MidiController:
 
     def reset(self) -> None:
         for n in range(1, 35):
-            self.note_on(n, 0)
+            self._send(mido.Message('note_on', note=n, velocity=0))
 
-        self.control_change(70, 0)
-        self.control_change(80, 64)
-        self.control_change(90, 0)
+        self.control_change(Control.FADER, 0)
+        self.control_change(Control.LED_RING, 64)
+        self.control_change(Control.LED_METER, 0)
 
         self.sysex(self.create_segment_display_data(''))
         self.sysex(self.create_lcd_display_data(''))
 
-    def note_on(self, note: int, velocity: int) -> None:
-        self._send(mido.Message('note_on', note=note, velocity=velocity))
+    def note_on(self, note: Note, velocity: int) -> None:
+        self._send(mido.Message('note_on', note=note.value, velocity=velocity))
 
-    def note_off(self, note: int, velocity: int) -> None:
-        self._send(mido.Message('note_off', note=note, velocity=velocity))
+    def note_off(self, note: Note, velocity: int) -> None:
+        self._send(mido.Message('note_off', note=note.value, velocity=velocity))
 
-    def control_change(self, control: int, value: int) -> None:
-        self._send(mido.Message('control_change', control=control, value=value))
+    def control_change(self, control: Control, value: int) -> None:
+        self._send(mido.Message('control_change', control=control.value, value=value))
 
     def sysex(self, data: List[int]) -> None:
         self._send(mido.Message('sysex', data=data))

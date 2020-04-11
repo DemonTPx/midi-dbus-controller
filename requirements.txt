@@ -3,4 +3,3 @@ python-rtmidi
 dbus-python
 PyGObject
 unidecode
-pyalsaaudio
