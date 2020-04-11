@@ -71,6 +71,7 @@ def handle_volume(volume: float) -> None:
     controller.control_change(Control.FADER, int(volume * 127))
 
 
+handle_volume(mixer.volume())
 mixer.callback = handle_volume
 properties_changed_handler(player.fetch_properties())
 player.on_properties_changed(properties_changed_handler)
