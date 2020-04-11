@@ -89,3 +89,5 @@ def sigint_handler(sig, frame):
 
 signal.signal(signal.SIGINT, sigint_handler)
 loop.run()
+
+controller.reset()
