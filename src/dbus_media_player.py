@@ -2,7 +2,7 @@ import dbus
 from collections import namedtuple
 
 
-class PlayerProperties(namedtuple('PlayerProperties', ['playback_status', 'album_artist', 'album', 'title', 'track_number'])):
+class PlayerProperties(namedtuple('PlayerProperties', ['playback_status', 'artist', 'album_artist', 'album', 'title', 'track_number'])):
     pass
 
 
@@ -51,6 +51,7 @@ class DbusMediaPlayer:
     def _create_player_properties(playback_status, metadata) -> PlayerProperties:
         return PlayerProperties(
             playback_status,
+            metadata['xesam:artist'][0],
             metadata['xesam:albumArtist'][0],
             metadata['xesam:album'],
             metadata['xesam:title'],
