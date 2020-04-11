@@ -1,5 +1,6 @@
 import mido
 import dbus
+import signal
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
 from midi_controller import MidiController, Note, Control, Color, Invert
@@ -56,11 +57,11 @@ def handle_midi_message(message) -> None:
             player.play_pause()
 
         if message.note == Note.FADER.value:
-            mixer.callback = None
+            mixer.set_callback(None)
 
     if message.type == 'note_on' and message.velocity == 0:
         if message.note == Note.FADER.value:
-            mixer.callback = handle_volume
+            mixer.set_callback(handle_volume)
 
     if message.type == 'control_change':
         if message.control == Control.FADER.value:
@@ -72,11 +73,19 @@ def handle_volume(volume: float) -> None:
 
 
 handle_volume(mixer.volume())
-mixer.callback = handle_volume
+mixer.set_callback(handle_volume)
 properties_changed_handler(player.fetch_properties())
 player.on_properties_changed(properties_changed_handler)
-controller.open_input(handle_midi_message)
-
+in_port = controller.open_input(handle_midi_message)
 
 loop = GLib.MainLoop()
+
+
+def sigint_handler(sig, frame):
+    if sig == signal.SIGINT:
+        loop.quit()
+        mixer.stop()
+
+
+signal.signal(signal.SIGINT, sigint_handler)
 loop.run()
