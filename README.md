@@ -11,8 +11,9 @@ The following packages are needed on Ubuntu 18.04 / Linux Mint 19
 ### Features
 
 - Control spotify using the previous, next, stop and play buttons
-- Show artist and track title in the LCD screen
 - Show "Spotify" and the album track number in the segment display
+- Show artist and track title in the LCD screen
+- The LED knob scrolls the text on the LCD screen
 - Link the fader to the volume using pulseaudio
 
 ### Notes
