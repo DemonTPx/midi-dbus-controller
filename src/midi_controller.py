@@ -12,6 +12,7 @@ class Control(Enum):
 
 
 class Note(Enum):
+    LED_KNOB = 0
     PREVIOUS = 20
     NEXT = 21
     STOP = 22

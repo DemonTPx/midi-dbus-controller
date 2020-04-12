@@ -3,7 +3,12 @@ from collections import namedtuple
 
 
 class PlayerProperties(namedtuple('PlayerProperties', ['playback_status', 'artist', 'album_artist', 'album', 'title', 'track_number'])):
-    pass
+    def is_different_track(self, other) -> bool:
+        return other is None or \
+            self.artist != other.artist or \
+            self.album_artist != other.album_artist or \
+            self.title != other.title or \
+            self.track_number != other.track_number
 
 
 class DbusMediaPlayer:
