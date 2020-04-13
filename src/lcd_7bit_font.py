@@ -1,6 +1,6 @@
 from typing import List
 
-letters = {
+_font = {
     "0": 0b0111111,
     "1": 0b0000110,
     "2": 0b1011011,
@@ -68,8 +68,15 @@ letters = {
     ")": 0b0001111,
     "(": 0b0111001,
     " ": 0,
+    ".": 0b0001000
 }
 
 
 def lcd_7bit_render(text: str) -> List[int]:
-    return list(map(lambda c: letters[c], text))
+    return list(map(lcd_7bit_letter, text))
+
+
+def lcd_7bit_letter(c: str) -> int:
+    if c not in _font:
+        return _font[' ']
+    return _font[c]

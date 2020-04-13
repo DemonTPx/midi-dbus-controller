@@ -17,6 +17,8 @@ class Note(Enum):
     NEXT = 21
     STOP = 22
     PLAY = 23
+    BANK_LEFT = 25
+    BANK_RIGHT = 26
     FADER = 110
 
 

@@ -4,7 +4,7 @@ import signal
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
 from midi_controller import MidiController
-from dbus_media_player import DbusMediaPlayer
+from dbus_media_player_monitor import DbusMediaPlayerMonitor
 from audio_mixer import AudioMixer
 from event_handler import EventHandler
 
@@ -15,12 +15,11 @@ controller.reset()
 
 dbus_loop = DBusGMainLoop(set_as_default=True)
 session_bus = dbus.SessionBus(mainloop=dbus_loop)
-
-player = DbusMediaPlayer(session_bus, 'spotify')
+monitor = DbusMediaPlayerMonitor(session_bus)
 
 mixer = AudioMixer()
 
-handler = EventHandler(controller, player, mixer)
+handler = EventHandler(controller, monitor, mixer)
 handler.setup()
 
 loop = GLib.MainLoop()
