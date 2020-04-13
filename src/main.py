@@ -3,8 +3,8 @@ import dbus
 import signal
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
-from midi_controller import MidiController, Note, Control, Color, Invert
-from dbus_media_player import DbusMediaPlayer, PlayerProperties
+from midi_controller import MidiController
+from dbus_media_player import DbusMediaPlayer
 from audio_mixer import AudioMixer
 from event_handler import EventHandler
 
