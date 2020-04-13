@@ -8,6 +8,7 @@ class AudioMixer:
 
     def __init__(self) -> None:
         self._pulse = pulsectl.Pulse('midi-dbus-controller')
+        self._sink_name = self._pulse.server_info().default_sink_name
 
         self._thread = threading.Thread(target=self._run)
         self._running = True
@@ -29,14 +30,14 @@ class AudioMixer:
         self._running = False
 
     def volume(self) -> int:
-        sink = self._pulse.sink_list()[0]
+        sink = self._pulse.get_sink_by_name(self._sink_name)
         return self._pulse.volume_get_all_chans(sink)
 
     def set_volume(self, volume: float) -> None:
         if volume > 1:
             raise Exception('Volume should not be higher than 1.0')
 
-        sink = self._pulse.sink_list()[0]
+        sink = self._pulse.get_sink_by_name(self._sink_name)
         self._pulse.volume_set_all_chans(sink, volume)
 
     def set_callback(self, callback: callable) -> None:

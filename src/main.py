@@ -10,7 +10,7 @@ from event_handler import EventHandler
 
 mido.set_backend('mido.backends.rtmidi/LINUX_ALSA')
 
-controller = MidiController('X-Touch One:X-Touch One MIDI 1 24:0')
+controller = MidiController('X-Touch One')
 controller.reset()
 
 dbus_loop = DBusGMainLoop(set_as_default=True)
@@ -29,11 +29,11 @@ loop = GLib.MainLoop()
 def sigint_handler(sig, frame):
     if sig == signal.SIGINT:
         loop.quit()
-        handler.stop()
-        mixer.stop()
 
 
 signal.signal(signal.SIGINT, sigint_handler)
 loop.run()
 
+handler.stop()
+mixer.stop()
 controller.reset()

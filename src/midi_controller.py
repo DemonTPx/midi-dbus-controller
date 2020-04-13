@@ -40,8 +40,15 @@ class Invert(Enum):
 
 class MidiController:
     def __init__(self, name: str) -> None:
-        self._name = name
-        self._port_out = mido.open_output(name)
+        self._name = self.find_midi_input(name)
+        self._port_out = mido.open_output(self._name)
+
+    def find_midi_input(self, name) -> str:
+        for input_name in mido.get_input_names():
+            if input_name.startswith(name):
+                return input_name
+
+        raise Exception('No input found with name %s' % name)
 
     def open_input(self, callback: callable):
         return mido.open_input(self._name, callback=callback)
