@@ -6,6 +6,8 @@ class AudioMixer:
     _volume_change_callback = None
     _volume_change_callback_lock = threading.RLock()
 
+    _event_received = False
+
     def __init__(self) -> None:
         self._pulse = pulsectl.Pulse('midi-dbus-controller')
         self._sink_name = self._pulse.server_info().default_sink_name
@@ -23,8 +25,13 @@ class AudioMixer:
         while self._running:
             pulse.event_listen(timeout=0.1)
 
+            if self._event_received:
+                self._sink_name = pulse.server_info().default_sink_name
+                self._on_volume_change()
+
     def _event_callback(self, event):
-        self._on_volume_change()
+        self._event_received = True
+        raise pulsectl.PulseLoopStop
 
     def stop(self):
         self._running = False
